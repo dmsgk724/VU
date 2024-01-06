@@ -112,29 +112,37 @@ def compute_accuracy():
 
     correct = 0;
     wrong = 0;
-    labeled_data = pd.read_csv("restaurants1/csv_files/labeled_data.csv")
-   # print(labeled_data)
+    labeled_data = pd.read_csv("restaurants1/csv_files/labeled_data.csv",header=5)
     for e in match_list:
         ltable_id ,rtable_id = e
-        condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
+        condition = ((labeled_data['ltable._id']==ltable_id ) & (labeled_data['rtable._id']==rtable_id) )
         if labeled_data[condition].empty==1:
             continue;
-        elif labeled_data[condition]['gold']=='1':
+        else: 
+            selected_rows = labeled_data[condition].iloc[0]
+            #print(selected_rows)
             
-            correct +=1
-        elif labeled_data[condition]['gold']=='0':
-            wrong +=1
+            if selected_rows['gold']==1:
+                #print("correct")
+                correct +=1
+            elif selected_rows['gold']==0:
+                wrong +=1
     
     for e in no_match_list:
         ltable_id ,rtable_id = e
         condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
         if labeled_data[condition].empty==1:
             continue;
-        elif labeled_data[condition]['gold']=="1":
-            
-            wrong +=1
-        elif labeled_data[condition]['gold']=='0':
-            correct +=1
+        else: 
+            selected_rows = labeled_data[condition].iloc[0]
+            #print(selected_rows)
+        
+            if selected_rows['gold']==1:
+                
+                wrong +=1
+            elif selected_rows['gold']==0:
+                wrong +=1
+    
     
     accuracy = float(correct/(correct+wrong))
     print("Our accuracy is: " + str(accuracy))
