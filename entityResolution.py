@@ -3,7 +3,7 @@ import numpy as np
 import collections 
 from difflib import SequenceMatcher
 import re
-from itertools import combinations
+from itertools import combinations,product
 
 #Step 1: Preparation of Data
 
@@ -90,11 +90,47 @@ def del_duplicate(blocks):
     return blocks
 
 #Step 4: Find perfect match and compare to ground truth
+match_list = set()
+no_match_list = set()
+
+#block 1-> zomato block2-> yelp 
+def find_perfect_match(block1,block2):
+    pair = list(product(block1,block2))
+    for y, z in pair:
+        score = SequenceMatcher(None, y['NAME'], z['NAME']).ratio()
+        score += SequenceMatcher(None, y['PHONENUMBER'], z['PHONENUMBER']).ratio()
+        score += SequenceMatcher(None, y['ADDRESS'], z['ADDRESS']).ratio()
+        if score >= 2.5:
+           # print(y['ID'])
+            match_list.add((int(y['ID'])-1450000000000,int(z['ID'])-1445980000001))
+        if score <=0.5:
+            no_match_list.add((int(y['ID'])-1450000000000,int(z['ID'])-1445980000001))
+
+
+
+#def compute_accuracy():
+    
+    
+    
+
+
+
+    
 
 
 
 block_yelp = blocking(yelp)
 block_zomato = blocking(zomato)
+
+
+
+for key, block in block_yelp.items():
+    if key in block_zomato:
+        find_perfect_match(block_zomato[key],block)
+
+print(match_list)
+
+#compute_accuracy()
 
 # data = [[1445980000001,'326',5,"(800) 586-5735",38,"dkfsjaldjf;lkajel;fjakej"],
 # [1445980000002,'326',3.5,"(800) 586-5735",33,"867 N Hermitage Ave, Chicago, IL 60622"],
