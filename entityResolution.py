@@ -3,7 +3,7 @@ import numpy as np
 import collections 
 from difflib import SequenceMatcher
 import re
-from itertools import combinations,product
+from itertools import combinations
 
 #Step 1: Preparation of Data
 
@@ -71,103 +71,20 @@ def blocking(df):
     #group마다 pair를 matcher를 통해 비교하고 threshold넘기면 하나의 데이터 셋에서 그 row삭제한다.
     #그 pair가 labeled dataset에 있으면 있는 count증가
     #아니면 아닌 count증가
-def del_duplicate(blocks):
-    for key,block in blocks.items():
-        pair = list(combinations(block,2))
-        del_list = set()
-        for y, z in pair:
-            score = SequenceMatcher(None, y['NAME'], z['NAME']).ratio()
-            score += SequenceMatcher(None, y['PHONENUMBER'], z['PHONENUMBER']).ratio()
-            score += SequenceMatcher(None, y['ADDRESS'], z['ADDRESS']).ratio()
-            if score >= 2.5:
-                del_list.add(y['ID'])
-        new_block = []
-        for row in block:
-            if row['ID'] in del_list:
-                continue
-            new_block.append(row)
-        blocks[key] = new_block
-    return blocks
-
-#Step 4: Find perfect match and compare to ground truth
-match_list = set()
-no_match_list = set()
-
-#block 1-> zomato block2-> yelp 
-def find_perfect_match(block1,block2):
-    pair = list(product(block1,block2))
+def del_duplicate(block):
+    pair = list(combinations(block,2))
+    w
     for y, z in pair:
         score = SequenceMatcher(None, y['NAME'], z['NAME']).ratio()
         score += SequenceMatcher(None, y['PHONENUMBER'], z['PHONENUMBER']).ratio()
         score += SequenceMatcher(None, y['ADDRESS'], z['ADDRESS']).ratio()
         if score >= 2.5:
-           # print(y['ID'])
-            match_list.add((int(y['ID'])-1450000000000,int(z['ID'])-1445980000001))
-        if score <=0.5:
-            no_match_list.add((int(y['ID'])-1450000000000,int(z['ID'])-1445980000001))
-
-
-
-def compute_accuracy():
-
-    correct = 0;
-    wrong = 0;
-    labeled_data = pd.read_csv("restaurants1/csv_files/labeled_data.csv")
-   # print(labeled_data)
-    for e in match_list:
-        ltable_id ,rtable_id = e
-        condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
-        if labeled_data[condition].empty==1:
-            continue;
-        elif labeled_data[condition]['gold']=='1':
             
-            correct +=1
-        elif labeled_data[condition]['gold']=='0':
-            wrong +=1
-    
-    for e in no_match_list:
-        ltable_id ,rtable_id = e
-        condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
-        if labeled_data[condition].empty==1:
-            continue;
-        elif labeled_data[condition]['gold']=="1":
-            
-            wrong +=1
-        elif labeled_data[condition]['gold']=='0':
-            correct +=1
-    
-    accuracy = float(correct/(correct+wrong))
-    print("Our accuracy is: " + str(accuracy))
 
-    
-    
-
-
-
-    
+#Step 4: Find perfect match and compare to ground truth
 
 
 
 block_yelp = blocking(yelp)
 block_zomato = blocking(zomato)
 
-
-
-for key, block in block_yelp.items():
-    if key in block_zomato:
-        find_perfect_match(block_zomato[key],block)
-
-
-
-compute_accuracy()
-
-# data = [[1445980000001,'326',5,"(800) 586-5735",38,"dkfsjaldjf;lkajel;fjakej"],
-# [1445980000002,'326',3.5,"(800) 586-5735",33,"867 N Hermitage Ave, Chicago, IL 60622"],
-# [1445980000003,'1760',4,"(415) 359-1212",454,"1760 Polk St, San Francisco, CA 94109"]
-# ]
-
-# df = pd.DataFrame(data, columns = ['ID','NAME','RATING','PHONENUMBER','NO_OF_REVIEWS','ADDRESS'])
-# df, zomato = prepare_data(df,df)
-# block_df = blocking(df)
-
-# print(del_duplicate(block_df))
