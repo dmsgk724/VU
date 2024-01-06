@@ -3,6 +3,8 @@ import numpy as np
 import collections 
 from difflib import SequenceMatcher
 import re
+from itertools import combinations
+
 #Step 1: Preparation of Data
 
 def prepare_data(yelp_data, zomato_data):
@@ -46,7 +48,9 @@ def prepare_data(yelp_data, zomato_data):
     return yelp_data, zomato_data
 
 
-
+yelp = pd.read_csv("restaurants1/csv_files/yelp.csv")
+zomato= pd.read_csv("restaurants1/csv_files/zomato.csv")
+yelp,zomato = prepare_data(yelp,zomato)
 
 
 
@@ -56,32 +60,35 @@ def blocking(df):
 
     for index, row in df.iterrows():
         title = row['NAME'][:3]
-        blocks[title].append(index)
-        if index>=5000:
-            break
+        blocks[title].append(row)
+
+    return blocks
 
 
-   
-    #return blocks
-
-
-
-
-#block마다 pair만든 후, 그들의 
+ 
 #Step 3: Identify duplicate and delete
 
     #group마다 pair를 matcher를 통해 비교하고 threshold넘기면 하나의 데이터 셋에서 그 row삭제한다.
     #그 pair가 labeled dataset에 있으면 있는 count증가
     #아니면 아닌 count증가
-
-
+def del_duplicate(blocks):
+    for key,block in blocks.items():
+        pair = list(combinations(block,2))
+        del_list = set()
+        for y, z in pair:
+            score = SequenceMatcher(None, y['NAME'], z['NAME']).ratio()
+            score += SequenceMatcher(None, y['PHONENUMBER'], z['PHONENUMBER']).ratio()
+            score += SequenceMatcher(None, y['ADDRESS'], z['ADDRESS']).ratio()
+            if score >= 2.5:
+                del_list.append(y['ID'])
+        for id in del_list:
+            block.drop(block[block['ID']==id].index, inplace=True)
+    return blocks
 
 #Step 4: Find perfect match and compare to ground truth
 
 
-yelp = pd.read_csv("restaurants1/csv_files/yelp.csv")
-zomato= pd.read_csv("restaurants1/csv_files/zomato.csv")
-yelp,zomato = prepare_data(yelp,zomato)
+
 block_yelp = blocking(yelp)
 block_zomato = blocking(zomato)
 
