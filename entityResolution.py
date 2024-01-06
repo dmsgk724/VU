@@ -108,8 +108,37 @@ def find_perfect_match(block1,block2):
 
 
 
-#def compute_accuracy():
+def compute_accuracy():
+
+    correct = 0;
+    wrong = 0;
+    labeled_data = pd.read_csv("restaurants1/csv_files/labeled_data.csv")
+   # print(labeled_data)
+    for e in match_list:
+        ltable_id ,rtable_id = e
+        condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
+        if labeled_data[condition].empty==1:
+            continue;
+        elif labeled_data[condition]['gold']=='1':
+            
+            correct +=1
+        elif labeled_data[condition]['gold']=='0':
+            wrong +=1
     
+    for e in no_match_list:
+        ltable_id ,rtable_id = e
+        condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
+        if labeled_data[condition].empty==1:
+            continue;
+        elif labeled_data[condition]['gold']=="1":
+            
+            wrong +=1
+        elif labeled_data[condition]['gold']=='0':
+            correct +=1
+    
+    accuracy = float(correct/(correct+wrong))
+    print("Our accuracy is: " + str(accuracy))
+
     
     
 
@@ -128,9 +157,9 @@ for key, block in block_yelp.items():
     if key in block_zomato:
         find_perfect_match(block_zomato[key],block)
 
-print(match_list)
 
-#compute_accuracy()
+
+compute_accuracy()
 
 # data = [[1445980000001,'326',5,"(800) 586-5735",38,"dkfsjaldjf;lkajel;fjakej"],
 # [1445980000002,'326',3.5,"(800) 586-5735",33,"867 N Hermitage Ave, Chicago, IL 60622"],
