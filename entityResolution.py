@@ -1,33 +1,87 @@
 import pandas as pd
-
+import numpy as np
+import collections 
+from difflib import SequenceMatcher
+import re
 #Step 1: Preparation of Data
 
-def prepare_data():
-    yelp_data = pd.read_csv("restaurants1/csv_files/yelp.csv")
-    zomato_data = pd.read_csv("restaurants1/csv_files/zomato.csv")
+def prepare_data(yelp_data, zomato_data):
+
+
+    # Drop ratings and number of Reviews
+    yelp_data = yelp_data.drop(columns=["RATING","NO_OF_REVIEWS"])
+    zomato_data = zomato_data.drop(columns=["RATING","NO_OF_REVIEWS"])
+
 
     # Drop duplicates
     yelp_data = yelp_data.drop_duplicates()
     zomato_data = zomato_data.drop_duplicates()
 
-    #Drop unwanted Columns
-
-    #FormatLast name
-
-    #FormatPhoneNumber
+    #lower str name
+    yelp_data['NAME'] = yelp_data['NAME'].map(str.lower)
+    zomato_data['NAME'] = zomato_data['NAME'].map(str.lower)
 
 
-    #Clean NullValue
+    #lower str address
+    yelp_data['ADDRESS'] = yelp_data['ADDRESS'].map(str.lower)
+    zomato_data['ADDRESS'] = zomato_data['ADDRESS'].map(str.lower)
+
+    # address에서 쉼표 제거하기 
+    yelp_data['ADDRESS'] = yelp_data['ADDRESS'].str.replace(",", "")
+    zomato_data['ADDRESS'] = zomato_data['ADDRESS'].str.replace(",", "")
+    yelp_data['ADDRESS'] = yelp_data['ADDRESS'].str.replace(".", "")
+    zomato_data['ADDRESS'] = zomato_data['ADDRESS'].str.replace(".", "")
+    
+
+        #regular expresion of phone number
+    standard = re.compile('\(\d\d\d\)\s\d\d\d\-\d\d\d\d')
+
+    for datasets in [yelp_data, zomato_data]:
+        for index, row in datasets.iterrows():
+            #check typo in phonenumber
+            if standard.match(row['PHONENUMBER']) == None:
+                datasets.drop(index,inplace=True)
+                
+    
+    return yelp_data, zomato_data
+
+
 
 
 
 
 #Step 2: Blocking scheme
+def blocking(df):
+    blocks = collections.defaultdict(list)
+
+    for index, row in df.iterrows():
+        title = row['NAME'][:3]
+        blocks[title].append(index)
+        if index>=5000:
+            break
 
 
+   
+    #return blocks
+
+
+
+
+#block마다 pair만든 후, 그들의 
 #Step 3: Identify duplicate and delete
+
+    #group마다 pair를 matcher를 통해 비교하고 threshold넘기면 하나의 데이터 셋에서 그 row삭제한다.
+    #그 pair가 labeled dataset에 있으면 있는 count증가
+    #아니면 아닌 count증가
+
+
 
 #Step 4: Find perfect match and compare to ground truth
 
 
-    
+yelp = pd.read_csv("restaurants1/csv_files/yelp.csv")
+zomato= pd.read_csv("restaurants1/csv_files/zomato.csv")
+yelp,zomato = prepare_data(yelp,zomato)
+block_yelp = blocking(yelp)
+block_zomato = blocking(zomato)
+
