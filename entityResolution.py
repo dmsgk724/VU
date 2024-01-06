@@ -80,9 +80,13 @@ def del_duplicate(blocks):
             score += SequenceMatcher(None, y['PHONENUMBER'], z['PHONENUMBER']).ratio()
             score += SequenceMatcher(None, y['ADDRESS'], z['ADDRESS']).ratio()
             if score >= 2.5:
-                del_list.append(y['ID'])
-        for id in del_list:
-            block.drop(block[block['ID']==id].index, inplace=True)
+                del_list.add(y['ID'])
+        new_block = []
+        for row in block:
+            if row['ID'] in del_list:
+                continue
+            new_block.append(row)
+        blocks[key] = new_block
     return blocks
 
 #Step 4: Find perfect match and compare to ground truth
@@ -92,3 +96,13 @@ def del_duplicate(blocks):
 block_yelp = blocking(yelp)
 block_zomato = blocking(zomato)
 
+# data = [[1445980000001,'326',5,"(800) 586-5735",38,"dkfsjaldjf;lkajel;fjakej"],
+# [1445980000002,'326',3.5,"(800) 586-5735",33,"867 N Hermitage Ave, Chicago, IL 60622"],
+# [1445980000003,'1760',4,"(415) 359-1212",454,"1760 Polk St, San Francisco, CA 94109"]
+# ]
+
+# df = pd.DataFrame(data, columns = ['ID','NAME','RATING','PHONENUMBER','NO_OF_REVIEWS','ADDRESS'])
+# df, zomato = prepare_data(df,df)
+# block_df = blocking(df)
+
+# print(del_duplicate(block_df))
