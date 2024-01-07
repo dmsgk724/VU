@@ -110,14 +110,14 @@ def find_perfect_match(block1,block2):
 
 def compute_accuracy():
 
-    correct = 0;
-    wrong = 0;
+    correct = 0
+    wrong = 0
     labeled_data = pd.read_csv("restaurants1/csv_files/labeled_data.csv",header=5)
     for e in match_list:
         ltable_id ,rtable_id = e
         condition = ((labeled_data['ltable._id']==ltable_id ) & (labeled_data['rtable._id']==rtable_id) )
         if labeled_data[condition].empty==1:
-            continue;
+            continue
         else: 
             selected_rows = labeled_data[condition].iloc[0]
             #print(selected_rows)
@@ -132,7 +132,7 @@ def compute_accuracy():
         ltable_id ,rtable_id = e
         condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
         if labeled_data[condition].empty==1:
-            continue;
+            continue
         else: 
             selected_rows = labeled_data[condition].iloc[0]
             #print(selected_rows)
@@ -168,14 +168,3 @@ for key, block in block_yelp.items():
 
 
 compute_accuracy()
-
-# data = [[1445980000001,'326',5,"(800) 586-5735",38,"dkfsjaldjf;lkajel;fjakej"],
-# [1445980000002,'326',3.5,"(800) 586-5735",33,"867 N Hermitage Ave, Chicago, IL 60622"],
-# [1445980000003,'1760',4,"(415) 359-1212",454,"1760 Polk St, San Francisco, CA 94109"]
-# ]
-
-# df = pd.DataFrame(data, columns = ['ID','NAME','RATING','PHONENUMBER','NO_OF_REVIEWS','ADDRESS'])
-# df, zomato = prepare_data(df,df)
-# block_df = blocking(df)
-
-# print(del_duplicate(block_df))
