@@ -74,11 +74,9 @@ def data_cleaning(data):
 
 def data_cleaning_2(data,rows):
     for row_num in rows:
-        print(data['ADDRESS'].iloc[row_num])
-        address_strings = data['ADDRESS'].iloc[row_num].split()
-        name_strings= data['NAME'].iloc[row_num].split()
-        data.at[row_num,'ADDRESS'] =' '.join(address_strings).strip()
-        data.at[row_num,'NAME'] = ' '.join(name_strings).strip()
+        index= data[data['ID']==row_num].index.values
+        name_strings= data['NAME'].iloc[int(index)].split()
+        data.at[int(index),'NAME'] = ' '.join(name_strings).strip()
     return data
 
     
@@ -87,10 +85,7 @@ def compare(origin, modified):
     
     merge_right= merge.query("_merge=='right_only'")
     merge_right = merge_right['ID'].values
-    #print(merge[merge['_merge']=='right_only']) #456개 다르다
     return merge_right
-    #print(merge[merge['_merge']=='left_only']) #456개 다르다
-    #print(merge[merge['_merge']=='both']) #현재까지 5409개 찾음 
 
 
 error_file = pd.read_csv("data/yelp_error.csv")
@@ -99,12 +94,10 @@ origin_file = pd.read_csv("restaurants1/csv_files/yelp.csv")
 error_file = data_cleaning(error_file)
 ids = list(compare(origin_file,error_file))
 error_file = data_cleaning_2(error_file,ids)
-compare(origin_file,error_file)
-#print(error_file.iloc[5])
-#print(origin_file.iloc[5])
 
-
-
+different_rows = compare(origin_file,error_file)
+accuracy = (len(origin_file)-len(different_rows))/len(origin_file)
+print("My accuracy is ", accuracy)
 
 #Report the number of corrupt instances
 #type of errors in each tuplea
