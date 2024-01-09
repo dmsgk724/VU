@@ -2,7 +2,7 @@ import pandas as pd
 import re
 
 pd.set_option('display.max_seq_items', None)
-pd.set_option('display.max_rows',None)
+# pd.set_option('display.max_rows',None)
 
 patterns = []
 patterns.append (re.compile(r'\d+rd'))
@@ -61,19 +61,12 @@ def data_cleaning(data):
                     name_strings[arr_index]=name_strings[arr_index].replace('3','e')
                     name_strings[arr_index]=name_strings[arr_index].replace('9','g')
         data.at[i,'ADDRESS'] =' '.join(address_strings).strip()
-        if name_strings[-1] == "Caf" or name_strings[-1] == "Crepe" or name_strings[-1] == "Restauran" or name_strings[-1] == "Tim" or name_strings[-1] == "Sausalit" or name_strings[-1] == "Ba" or name_strings[-1] == "Crea" or name_strings[-1] == "Ta" or name_strings[0] == "Anne":
+        if name_strings[-1] in ["Caf", "Crepe", "Restauran", "Tim", "Sausalit", "Ba", "Crea", "Ta", "Gril", "Expres", "Pu"] or name_strings[0] == "Anne":
             data.at[i,'NAME'] =' '.join(name_strings).strip()
         elif len(name_strings) == 1 and name_strings[0].isdigit():
             data.at[i,'NAME'] =' '.join(name_strings).strip()
         else:
             data.at[i,'NAME'] =' '.join(name_strings).strip()+' '
-   # print(data)
-    
-
-    
-
-    
-
     
     return data
                 
@@ -81,13 +74,15 @@ def data_cleaning(data):
     
 def compare(origin, modified):
     merge = pd.merge(origin, modified,indicator=True, how="outer")
+    merge = merge['ID'].valeus
+    
     print(merge[merge['_merge']=='right_only'])
     #print(merge[merge['_merge']=='left_only']) #456개 다르다
     #print(merge[merge['_merge']=='both']) #현재까지 5409개 찾음 
 
 
-error_file = pd.read_csv("/Users/parkeunha/DataIntegrationAndAnalysis/data/yelp_error.csv")
-origin_file = pd.read_csv("/Users/parkeunha/DataIntegrationAndAnalysis/restaurants1/csv_files/yelp.csv")
+error_file = pd.read_csv("data/yelp_error.csv")
+origin_file = pd.read_csv("restaurants1/csv_files/yelp.csv")
 
 error_file = data_cleaning(error_file)
 compare(origin_file,error_file)
