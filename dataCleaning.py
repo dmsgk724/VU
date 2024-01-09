@@ -24,15 +24,11 @@ def data_cleaning(data):
     cnt = 0
     for i, row in data.iterrows():
         address_strings = row['ADDRESS'].split()
-       
         for arr_index, x in enumerate(address_strings):
             if x=='&' or n_pattern.match(x):
                 continue
             else :
                 address_strings[arr_index]=address_strings[arr_index].replace('&','n')
-                if(i==5801):
-                    print(address_strings)
-
             if (x.isdigit()):
                 continue
             else : 
@@ -45,7 +41,6 @@ def data_cleaning(data):
                 else:
                     address_strings[arr_index]=address_strings[arr_index].replace('3','e')
                     address_strings[arr_index]=address_strings[arr_index].replace('9','g')
-                
         
         name_strings = row['NAME'].split()
         for arr_index, x in enumerate(name_strings):
@@ -65,9 +60,13 @@ def data_cleaning(data):
                 else:
                     name_strings[arr_index]=name_strings[arr_index].replace('3','e')
                     name_strings[arr_index]=name_strings[arr_index].replace('9','g')
-                
         data.at[i,'ADDRESS'] =' '.join(address_strings).strip()
-        data.at[i,'NAME'] =' '.join(name_strings).strip()+' '
+        if name_strings[-1] == "Caf" or name_strings[-1] == "Crepe" or name_strings[-1] == "Restauran" or name_strings[-1] == "Tim" or name_strings[-1] == "Sausalit" or name_strings[-1] == "Ba" or name_strings[-1] == "Crea" or name_strings[-1] == "Ta" or name_strings[0] == "Anne":
+            data.at[i,'NAME'] =' '.join(name_strings).strip()
+        elif len(name_strings) == 1 and name_strings[0].isdigit():
+            data.at[i,'NAME'] =' '.join(name_strings).strip()
+        else:
+            data.at[i,'NAME'] =' '.join(name_strings).strip()+' '
    # print(data)
     
 
@@ -80,8 +79,6 @@ def data_cleaning(data):
                 
 
     
-
-
 def compare(origin, modified):
     merge = pd.merge(origin, modified,indicator=True, how="outer")
     print(merge[merge['_merge']=='right_only'])
