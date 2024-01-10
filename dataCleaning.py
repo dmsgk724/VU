@@ -11,9 +11,6 @@ patterns.append( re.compile(r'\d+nd'))
 
 n_pattern = re.compile(r'\d+&\d+')
 
-short_word = ["Caf", "Crepe","Restauran", "Tim", "Sausalit","Ba","Crea","Ta","Gril","Expres","Pu","Currywurs","Pizz","Del","Truax","Loung","Cuisin","Hous","Mercantil","Kitche","Sho","Toky"]
-
-
 
 def data_cleaning(data):
     
@@ -61,12 +58,7 @@ def data_cleaning(data):
                     name_strings[arr_index]=name_strings[arr_index].replace('3','e')
                     name_strings[arr_index]=name_strings[arr_index].replace('9','g')
         data.at[i,'ADDRESS'] =' '.join(address_strings).strip()
-        if name_strings[0] == "Anne" or name_strings[-1] in short_word:
-            data.at[i,'NAME'] =' '.join(name_strings).strip()
-        elif len(name_strings) == 1 and name_strings[0].isdigit():
-            data.at[i,'NAME'] =' '.join(name_strings).strip()
-        else:
-            data.at[i,'NAME'] =' '.join(name_strings).strip()+' '
+        data.at[i,'NAME'] =' '.join(name_strings).strip()+' '
  
     return data
 
