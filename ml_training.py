@@ -22,7 +22,7 @@ x = prepare_input(raw_train_X)
 y = list(train_data['gold'].values)
 
 # 2. Train a ML model using labeled_data.csv for three times
-svm_model = svm.SVC(C=1, kernel = 'linear', gamma="scale")
+svm_model = svm.SVC(C=1, kernel = 'poly', gamma="scale")
 svm_model.fit(x,y) # training using labeled_data.csv
 scores = cross_val_score(svm_model, x, y, cv=3)
 print('My cross validation is ', scores.mean())
@@ -34,4 +34,4 @@ predicting_x = prepare_input(predicting_data)
 true_data = pd.read_csv("data/goldY.csv").values
 
 prediction = svm_model.predict(predicting_x)
-print(mt.accuracy_score(list(prediction),list(true_data)))
+print("My accuracy is ", mt.accuracy_score(list(prediction),list(true_data)))

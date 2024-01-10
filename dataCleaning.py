@@ -2,7 +2,6 @@ import pandas as pd
 import re
 
 pd.set_option('display.max_seq_items', None)
-# pd.set_option('display.max_rows',None)
 
 patterns = []
 patterns.append (re.compile(r'\d+rd'))
@@ -11,9 +10,6 @@ patterns.append( re.compile(r'\d+st'))
 patterns.append( re.compile(r'\d+nd'))
 
 n_pattern = re.compile(r'\d+&\d+')
-
-short_word = ["Caf", "Crepe","Restauran", "Tim", "Sausalit","Ba","Crea","Ta","Gril","Expres","Pu","Currywurs","Pizz","Del","Truax","Loung","Cuisin","Hous","Mercantil","Kitche","Sho","Toky"]
-
 
 
 def data_cleaning(data):
@@ -62,12 +58,7 @@ def data_cleaning(data):
                     name_strings[arr_index]=name_strings[arr_index].replace('3','e')
                     name_strings[arr_index]=name_strings[arr_index].replace('9','g')
         data.at[i,'ADDRESS'] =' '.join(address_strings).strip()
-        if name_strings[0] == "Anne" or name_strings[-1] in short_word:
-            data.at[i,'NAME'] =' '.join(name_strings).strip()
-        elif len(name_strings) == 1 and name_strings[0].isdigit():
-            data.at[i,'NAME'] =' '.join(name_strings).strip()
-        else:
-            data.at[i,'NAME'] =' '.join(name_strings).strip()+' '
+        data.at[i,'NAME'] =' '.join(name_strings).strip()+' '
  
     return data
 
@@ -98,8 +89,3 @@ error_file = data_cleaning_2(error_file,ids)
 different_rows = compare(origin_file,error_file)
 accuracy = (len(origin_file)-len(different_rows))/len(origin_file)
 print("My accuracy is ", accuracy)
-
-#Report the number of corrupt instances
-#type of errors in each tuplea
-#number of fixed instances
-#error detection and correction techniques applied
