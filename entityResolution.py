@@ -80,7 +80,7 @@ def del_duplicate(blocks):
             score += SequenceMatcher(None, y['PHONENUMBER'], z['PHONENUMBER']).ratio()
             score += SequenceMatcher(None, y['ADDRESS'], z['ADDRESS']).ratio()
             if score >= 2.5:
-                del_list.add(y['ID'])
+                del_list.add(z['ID'])
         new_block = []
         for row in block:
             if row['ID'] in del_list:
@@ -100,10 +100,10 @@ def find_perfect_match(block1,block2):
         score = SequenceMatcher(None, y['NAME'], z['NAME']).ratio()
         score += SequenceMatcher(None, y['PHONENUMBER'], z['PHONENUMBER']).ratio()
         score += SequenceMatcher(None, y['ADDRESS'], z['ADDRESS']).ratio()
-        if score >= 2.5:
+        if score >= 2.1:
            # print(y['ID'])
             match_list.add((int(y['ID'])-1450000000000,int(z['ID'])-1445980000001))
-        if score <=0.5:
+        if score < 2.1:
             no_match_list.add((int(y['ID'])-1450000000000,int(z['ID'])-1445980000001))
 
 
@@ -127,7 +127,8 @@ def compute_accuracy():
                 correct +=1
             elif selected_rows['gold']==0:
                 wrong +=1
-    
+    print(correct)
+    print(wrong)
     for e in no_match_list:
         ltable_id ,rtable_id = e
         condition = ((labeled_data['ltable._id']==ltable_id )& (labeled_data['rtable._id']==rtable_id) )
@@ -141,16 +142,11 @@ def compute_accuracy():
                 
                 wrong +=1
             elif selected_rows['gold']==0:
-                wrong +=1
+                correct +=1
     
     
     accuracy = float(correct/(correct+wrong))
     print("Our accuracy is: " + str(accuracy))
-
-    
-    
-
-
 
     
 
@@ -158,13 +154,14 @@ def compute_accuracy():
 
 block_yelp = blocking(yelp)
 block_zomato = blocking(zomato)
+clean_yelp = del_duplicate(block_yelp)
+clean_zomato = del_duplicate(block_zomato)
 
 
-
-for key, block in block_yelp.items():
-    if key in block_zomato:
+for key, block in clean_yelp.items():
+    if key in clean_zomato:
         find_perfect_match(block_zomato[key],block)
 
-
+print(len(match_list), len(no_match_list))
 
 compute_accuracy()

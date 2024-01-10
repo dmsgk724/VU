@@ -2,7 +2,6 @@ import pandas as pd
 import re
 
 pd.set_option('display.max_seq_items', None)
-# pd.set_option('display.max_rows',None)
 
 patterns = []
 patterns.append (re.compile(r'\d+rd'))
@@ -98,8 +97,3 @@ error_file = data_cleaning_2(error_file,ids)
 different_rows = compare(origin_file,error_file)
 accuracy = (len(origin_file)-len(different_rows))/len(origin_file)
 print("My accuracy is ", accuracy)
-
-#Report the number of corrupt instances
-#type of errors in each tuplea
-#number of fixed instances
-#error detection and correction techniques applied
